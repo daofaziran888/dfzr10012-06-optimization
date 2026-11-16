@@ -73,10 +73,14 @@ export default function LogView() {
     try {
       const response = await request(`${ENDPOINT}/${row.id}/actions`, {
         method: 'POST',
-        body: JSON.stringify({ action }),
+        body: JSON.stringify({ values: { action } }),
       })
       if (!response.ok) {
         throw new Error('流处理日志中心动作未生效，请稍后重试')
+      }
+      const result = await response.json()
+      if (result.ok === false) {
+        throw new Error(result.message || '动作未生效')
       }
       await reload()
     } catch (error) {
